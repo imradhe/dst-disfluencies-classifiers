@@ -94,7 +94,7 @@ class Run:
 # ---------------------------------------------------------------------
 
 def run_rf(r: Run,
-           apply_smote: bool = True,
+           apply_smote: bool = False,
            standardise: bool = True) -> Dict:
     """
     Full Random-Forest training + evaluation for one Run.
@@ -161,7 +161,7 @@ def run_rf(r: Run,
         "n_train_raw":  info["n_train_raw"],
         "n_train_bal":  info["n_train_balanced"],
         "n_test":       int(len(y_te)),
-        "apply_smote":  apply_smote,
+        "balance_strategy": info.get("balance_strategy", "smote" if apply_smote else "undersample"),
         "standardise":  standardise,
         "elapsed_sec":  elapsed,
         "metrics":      metrics,
@@ -178,11 +178,12 @@ def run_rf(r: Run,
 # ---------------------------------------------------------------------
 
 def run_dnn(r: Run,
-            apply_smote: bool = True,
+            balance_strategy: str = "undersample",
+            undersample_ratio: float = 2.0,
             standardise: bool = True,
             cfg=None) -> Dict:
     """Full DNN training + evaluation for one Run."""
-    from classifier.imbalance import smote
+    from classifier.imbalance import smote, undersample_majority
     from classifier.models.dnn import DNNConfig, predict_dnn, save_dnn, train_dnn
 
     if cfg is None:
@@ -212,8 +213,15 @@ def run_dnn(r: Run,
             X_va = _apply_standardiser(X_va, stats)
 
     n_train_raw = int(len(y_tr))
-    if apply_smote:
+    if balance_strategy == "undersample":
+        X_tr, y_tr = undersample_majority(
+            X_tr, y_tr, ratio=undersample_ratio,
+            random_state=cfg.random_state,
+        )
+    elif balance_strategy == "smote":
         X_tr, y_tr = smote(X_tr, y_tr, random_state=cfg.random_state)
+    elif balance_strategy != "none":
+        raise ValueError(f"Unknown balance_strategy {balance_strategy!r}")
     n_train_bal = int(len(y_tr))
 
     model, info = train_dnn(
@@ -248,7 +256,7 @@ def run_dnn(r: Run,
         "n_train_raw":  n_train_raw,
         "n_train_bal":  n_train_bal,
         "n_test":       int(len(y_te)),
-        "apply_smote":  apply_smote,
+        "balance_strategy": balance_strategy,
         "standardise":  standardise,
         "epochs_run":   info["epochs_run"],
         "elapsed_sec":  elapsed,

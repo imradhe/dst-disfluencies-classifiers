@@ -21,7 +21,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 
 from classifier.config import RANDOM_SEED
-from classifier.imbalance import smote
+from classifier.imbalance import smote, undersample_majority
 
 
 @dataclass
@@ -31,26 +31,45 @@ class RFConfig:
     class_weight: str = "balanced"
     n_jobs: int = -1
     random_state: int = RANDOM_SEED
+    # Frame-level RF on 20+ hours of speech would need SMOTE to
+    # synthesise ~10M minority rows -- both slow (~6h/fit) and empirically
+    # hurts generalisation. Default to random undersampling of the
+    # majority class(es) instead, capped at `undersample_ratio` * minority.
+    balance_strategy: str = "undersample"   # "undersample" | "smote" | "none"
+    undersample_ratio: float = 2.0
 
 
 def train_rf(
     X_train: np.ndarray,
     y_train: np.ndarray,
     cfg: RFConfig = RFConfig(),
-    apply_smote: bool = True,
+    apply_smote: bool = False,   # deprecated alias for balance_strategy="smote"
 ) -> Tuple[RandomForestClassifier, dict]:
     """
-    Train a Random Forest on (SMOTE-balanced by default) frame features.
+    Train a Random Forest on frame features with configurable
+    class-imbalance handling.
 
     Returns (fitted_model, info_dict).
     """
     info = {"n_train_raw": int(len(y_train))}
 
-    if apply_smote:
+    strategy = "smote" if apply_smote else cfg.balance_strategy
+
+    if strategy == "undersample":
+        X_train, y_train = undersample_majority(
+            X_train, y_train,
+            ratio=cfg.undersample_ratio,
+            random_state=cfg.random_state,
+        )
+    elif strategy == "smote":
         X_train, y_train = smote(X_train, y_train, random_state=cfg.random_state)
-        info["n_train_balanced"] = int(len(y_train))
+    elif strategy == "none":
+        pass
     else:
-        info["n_train_balanced"] = int(len(y_train))
+        raise ValueError(f"Unknown balance_strategy {strategy!r}")
+
+    info["n_train_balanced"] = int(len(y_train))
+    info["balance_strategy"] = strategy
 
     model = RandomForestClassifier(
         n_estimators=cfg.n_estimators,
