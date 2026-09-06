@@ -65,6 +65,7 @@ class MFCCSDCExtractor(BaseFeatureExtractor):
         sdc_d: int = 1,
         sdc_p: int = 2,
         sdc_k: int = 7,
+        sdc_mode: str = "modified",
     ):
         """
         Parameters
@@ -91,10 +92,22 @@ class MFCCSDCExtractor(BaseFeatureExtractor):
             Shift between successive SDC blocks.
 
         sdc_k : int
-            Number of shifts on either side of the current frame.
+            Number of shifts (K in the paper). See `sdc_mode`.
+
+        sdc_mode : str
+            One of:
+              - "modified"     : paper's chosen variant (Section 3.3).
+                                 i ranges over -K .. +K  ->  (2K + 1) blocks.
+              - "conventional" : paper's baseline (Section 2.1, standard SDC).
+                                 i ranges over 0 .. K-1  ->  K blocks.
         """
 
         super().__init__(sample_rate=sample_rate)
+
+        if sdc_mode not in ("modified", "conventional"):
+            raise ValueError(
+                f"sdc_mode must be 'modified' or 'conventional', got {sdc_mode!r}"
+            )
 
         self.n_mfcc = n_mfcc
 
@@ -106,13 +119,15 @@ class MFCCSDCExtractor(BaseFeatureExtractor):
         self.sdc_d = sdc_d
         self.sdc_p = sdc_p
         self.sdc_k = sdc_k
+        self.sdc_mode = sdc_mode
 
         # 13 MFCC + 1 energy
         self.base_dim = self.n_mfcc + 1
 
-        # With k=7, the implementation uses
-        # 2*k + 1 shifted blocks.
-        self.sdc_blocks = 2 * self.sdc_k + 1
+        if self.sdc_mode == "modified":
+            self.sdc_blocks = 2 * self.sdc_k + 1
+        else:
+            self.sdc_blocks = self.sdc_k
 
         self.sdc_dim = self.base_dim * self.sdc_blocks
 
@@ -174,15 +189,17 @@ class MFCCSDCExtractor(BaseFeatureExtractor):
 
     def _compute_sdc(self, base_features: np.ndarray) -> np.ndarray:
         """
-        Compute modified Shifted Delta Cepstral (SDC) features
-        exactly as defined in the paper (Section 2.1, equation 1,
-        with the modification described in Section 3.3).
+        Compute Shifted Delta Cepstral (SDC) features exactly as
+        defined in the paper (Section 2.1, equation 1), with the
+        modification described in Section 3.3 available via `sdc_mode`.
 
-        For each frame t and each shift i in [-K, K]:
+        For each frame t and each shift index i:
             dc(t, i) = c(t + i*p + d) - c(t + i*p - d)
 
-        The (2K + 1) shifted delta vectors are stacked along the
-        feature axis, giving N * (2K + 1) SDC dimensions per frame.
+        Shift ranges:
+            sdc_mode == "modified"     ->  i in [-K, K]     (2K + 1 blocks)
+            sdc_mode == "conventional" ->  i in [ 0, K - 1] (K blocks)
+
         Boundary frames are handled by edge padding on the base
         features (equivalent to replicating the first / last frame).
 
@@ -194,8 +211,7 @@ class MFCCSDCExtractor(BaseFeatureExtractor):
         Returns
         -------
         np.ndarray
-            Shape: (N * (2K + 1), T)
-            Default K = 7  ->  (210, T)
+            Shape: (N * sdc_blocks, T)
         """
 
         N, T = base_features.shape
@@ -203,9 +219,12 @@ class MFCCSDCExtractor(BaseFeatureExtractor):
         p = self.sdc_p
         K = self.sdc_k
 
-        # Pad enough on both sides that every requested offset
-        # (t + i*p +/- d) stays in bounds for all t in [0, T).
-        max_offset = K * p + d
+        if self.sdc_mode == "modified":
+            shift_indices = range(-K, K + 1)
+            max_offset = K * p + d
+        else:
+            shift_indices = range(0, K)
+            max_offset = (K - 1) * p + d
 
         padded = np.pad(
             base_features,
@@ -215,7 +234,7 @@ class MFCCSDCExtractor(BaseFeatureExtractor):
 
         shifted_blocks = []
 
-        for i in range(-K, K + 1):
+        for i in shift_indices:
             shift = i * p
 
             plus = padded[:, max_offset + shift + d : max_offset + shift + d + T]
@@ -322,3 +341,28 @@ class MFCCSDCExtractor(BaseFeatureExtractor):
         )
 
         return feature_vector
+
+
+# ============================================================
+# MAIN
+# ============================================================
+
+if __name__ == "__main__":
+    from pathlib import Path
+    from base_feature_extractor import run_extraction
+
+    # Edit these paths for your environment.
+    DATASET_DIR = Path(r"D:\IED_Dataset")
+    OUTPUT_DIR = Path(r"D:\IED_MFCC_SDC")
+
+    # Paper's chosen K per disfluency type:
+    #   K = 7  for filled pause / prolongation
+    #   K = 12 for word / part-word repetition
+    extractor = MFCCSDCExtractor(sdc_k=7, sdc_mode="modified")
+
+    run_extraction(
+        extractor=extractor,
+        dataset_dir=DATASET_DIR,
+        output_dir=OUTPUT_DIR,
+        tag=f"mfcc_sdc_{extractor.sdc_mode}_k{extractor.sdc_k}",
+    )
