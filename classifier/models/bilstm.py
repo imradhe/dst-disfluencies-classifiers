@@ -80,7 +80,11 @@ class BiLSTMConfig:
     #                          (non-overlapping), N frames per window.
     # Default 3000 frames = 30 s at 10 ms hop.
     chunk_frames: Optional[int] = 3000
-    device: str = "cuda" if torch.cuda.is_available() else "cpu"
+    device: str = (
+        "cuda" if torch.cuda.is_available()
+        else "mps" if torch.backends.mps.is_available()
+        else "cpu"
+    )
     random_state: int = 42
 
 

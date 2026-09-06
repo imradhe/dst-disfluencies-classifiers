@@ -64,7 +64,11 @@ class DNNConfig:
     max_epochs: int = 100
     early_stop_patience: int = 10
     val_frac_of_train: float = 0.10   # carved from train if no val provided
-    device: str = "cuda" if torch.cuda.is_available() else "cpu"
+    device: str = (
+        "cuda" if torch.cuda.is_available()
+        else "mps" if torch.backends.mps.is_available()
+        else "cpu"
+    )
     random_state: int = 42
 
 

@@ -24,20 +24,27 @@ import numpy as np
 from classifier.config import RANDOM_SEED, SPLITS_DIR
 
 
-SPEAKER_RE = re.compile(r"speaker[_\-]?(\d+)", re.IGNORECASE)
+# Two naming conventions appear in IED-Extended, and the speaker
+# numbering is only unique WITHIN each intern namespace:
+#     IED_INTERN_1__speaker_3           -> intern 1, speaker 3
+#     intern5__3_1_Speaker_27_002       -> intern 5, speaker 27
+_FMT_A = re.compile(r"IED[_-]INTERN[_-](\d+).*?speaker[_-]?(\d+)", re.IGNORECASE)
+_FMT_B = re.compile(r"intern[_-]?(\d+).*?speaker[_-]?(\d+)",       re.IGNORECASE)
 
 
 def speaker_id(stem: str) -> Optional[str]:
     """
-    Extract the speaker id from a filename stem.
+    Return a globally-unique speaker key of the form `intern{X}__spk{Y}`,
+    combining the intern namespace with the speaker number so that
+    identical speaker numbers from different interns don't collide.
 
-    IED_Extended stems look like `IED_INTERN_1__speaker_1`; the speaker
-    number is what makes a speaker unique across the whole dataset.
-
-    Returns None if no `speaker_N` token is present.
+    Returns None if no recognisable intern/speaker pair is found.
     """
-    m = SPEAKER_RE.search(stem)
-    return m.group(1) if m else None
+    for pat in (_FMT_A, _FMT_B):
+        m = pat.search(stem)
+        if m:
+            return f"intern{m.group(1)}__spk{m.group(2)}"
+    return None
 
 
 def _split_path(scheme: str) -> Path:
