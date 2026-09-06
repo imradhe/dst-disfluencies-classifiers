@@ -177,11 +177,69 @@ def _get_prosody_module():
     return _PROSODY_MODULE
 
 
+def _syllabify_chunked(audio: np.ndarray, module,
+                       chunk_sec: float = 30.0,
+                       overlap_sec: float = 0.5
+                       ) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Syllabify a long file by chunking through Gammatone -> sonority ->
+    detect_syllable_regions per chunk. Returns two 1-D arrays of
+    syllable start/end times in seconds (global to the file).
+
+    Matches the chunking pattern used in the extractor's own main().
+    Chunking is what makes this affordable on 30-min lecture files.
+    """
+    duration = len(audio) / SAMPLE_RATE
+    step = chunk_sec - overlap_sec
+    starts, ends = [], []
+
+    chunk_start = 0.0
+    while chunk_start < duration:
+        chunk_end = min(chunk_start + chunk_sec, duration)
+        s = int(chunk_start * SAMPLE_RATE)
+        e = int(chunk_end   * SAMPLE_RATE)
+        piece = audio[s:e]
+        if len(piece) < int(0.1 * SAMPLE_RATE):
+            break
+
+        g = module.compute_gammatone(piece, SAMPLE_RATE)
+        son = module.compute_sonority(g)
+        regs = module.detect_syllable_regions(son)
+
+        if len(regs):
+            # Discard boundary-overlapping regions to avoid duplicates
+            core_start = chunk_start if chunk_start == 0 else chunk_start + overlap_sec
+            for _, row in regs.iterrows():
+                rs = chunk_start + float(row["start"])
+                re_ = chunk_start + float(row["end"])
+                if rs < core_start:
+                    continue
+                if chunk_end < duration and re_ > chunk_end:
+                    continue
+                starts.append(rs)
+                ends.append(re_)
+
+        chunk_start += step
+
+    if not starts:
+        return np.zeros(0, dtype=np.float64), np.zeros(0, dtype=np.float64)
+
+    # Sort and dedupe by (start, end)
+    idx = np.lexsort((np.asarray(ends), np.asarray(starts)))
+    starts = np.asarray(starts, dtype=np.float64)[idx]
+    ends   = np.asarray(ends,   dtype=np.float64)[idx]
+    keep = np.ones(len(starts), dtype=bool)
+    for i in range(1, len(starts)):
+        if abs(starts[i] - starts[i - 1]) < 1e-6 and abs(ends[i] - ends[i - 1]) < 1e-6:
+            keep[i] = False
+    return starts[keep], ends[keep]
+
+
 def _prosody_syllable_vectors(audio: np.ndarray,
                               module) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Run syllabifier on the whole file and extract the 32-dim vector for
-    every syllable-like region.
+    Fast path: compute pitch + energy contours ONCE per file, syllabify
+    in chunks, then per-syllable slice + stat computation.
 
     Returns
     -------
@@ -189,31 +247,99 @@ def _prosody_syllable_vectors(audio: np.ndarray,
         [start_sec, end_sec] per syllable, sorted by start.
     vectors : np.ndarray of shape (N_syl, 32)
     """
-    g = module.compute_gammatone(audio, SAMPLE_RATE)
-    s = module.compute_sonority(g)
-    regions_df = module.detect_syllable_regions(s)
+    import parselmouth
+    import librosa
 
     ext = module.ProsodicAcousticExtractor()
     ext.setup()
 
-    starts, ends, vecs = [], [], []
-    for _, row in regions_df.iterrows():
-        start, end = float(row["start"]), float(row["end"])
-        try:
-            vec = ext.extract_segment(audio, start, end)
-        except Exception:
-            continue
-        starts.append(start)
-        ends.append(end)
-        vecs.append(vec)
-
-    if not vecs:
+    # Syllabify (chunked -> affordable on 30-min files).
+    starts, ends = _syllabify_chunked(audio, module)
+    if len(starts) == 0:
         return (np.zeros((0, 2), dtype=np.float64),
                 np.zeros((0, len(ext.FEATURE_NAMES)), dtype=np.float32))
 
+    # ---- Compute pitch once (parselmouth autocorrelation) ----
+    snd = parselmouth.Sound(audio, sampling_frequency=SAMPLE_RATE)
+    pitch = snd.to_pitch(time_step=0.005, pitch_floor=75, pitch_ceiling=500)
+    f0_values = pitch.selected_array["frequency"]
+    f0_times  = pitch.xs()
+
+    # ---- Compute energy contour once (RMS -> summed-squared energy) ----
+    rms = librosa.feature.rms(
+        y=audio,
+        frame_length=ext.ENERGY_FRAME,
+        hop_length=ext.ENERGY_HOP,
+        center=True,
+    )[0]
+    energy = (rms ** 2) * ext.ENERGY_FRAME
+    energy_times = np.arange(len(energy)) * ext.ENERGY_HOP / SAMPLE_RATE
+
+    # ---- Per-syllable stats using pre-computed contours ----
+    from ied_prosodic_acoustic_feature_extractor import (
+        _mse_series, _stats_3, _stats_5, _tilt_series,
+    )
+
+    def _stats_for(start: float, end: float) -> np.ndarray:
+        # F0 slice (voiced only)
+        mask_f = (f0_times >= start) & (f0_times < end) & (f0_values > 0)
+        f0 = f0_values[mask_f]
+        # Voicing counts
+        mask_all = (f0_times >= start) & (f0_times < end)
+        voicing = (f0_values[mask_all] > 0).astype(np.int8)
+        n_voiced = int((voicing == 1).sum())
+        n_unvoiced_all = int((voicing == 0).sum())
+
+        # Energy slice + pause detection
+        mask_e = (energy_times >= start) & (energy_times < end)
+        e = energy[mask_e]
+
+        if len(e) and np.max(e) > 0:
+            pause_mask = e < (ext.PAUSE_THRESHOLD_RATIO * np.max(e))
+        else:
+            pause_mask = np.zeros_like(e, dtype=bool)
+
+        # Pause durations (contiguous runs)
+        frame_dur = ext.ENERGY_HOP / SAMPLE_RATE
+        pause_durs = []
+        run = 0
+        for is_p in pause_mask:
+            if is_p:
+                run += 1
+            else:
+                if run > 0:
+                    pause_durs.append(run * frame_dur)
+                run = 0
+        if run > 0:
+            pause_durs.append(run * frame_dur)
+        pause_durs = np.asarray(pause_durs, dtype=np.float64)
+
+        n_pause = int(pause_mask.sum())
+        n_unvoiced = max(0, n_unvoiced_all - n_pause)
+
+        def _ratio(a, b):
+            return float(a) / float(b) if b > 0 else 0.0
+
+        vec = np.asarray(
+            [
+                *_stats_5(f0),
+                *_stats_5(_tilt_series(f0)),
+                *_stats_5(_mse_series(f0)),
+                *_stats_3(e),
+                *_stats_3(_tilt_series(e)),
+                *_stats_3(_mse_series(e)),
+                *_stats_5(pause_durs),
+                _ratio(n_voiced, n_unvoiced),
+                _ratio(n_voiced, n_pause),
+                _ratio(n_unvoiced, n_pause),
+            ],
+            dtype=np.float32,
+        )
+        return vec
+
+    vecs = np.stack([_stats_for(s, e) for s, e in zip(starts, ends)]).astype(np.float32)
     regions = np.column_stack([starts, ends]).astype(np.float64)
-    vectors = np.stack(vecs).astype(np.float32)
-    return regions, vectors
+    return regions, vecs
 
 
 def _prosody(audio: np.ndarray, n_target: Optional[int],
