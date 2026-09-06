@@ -1,20 +1,34 @@
 """
-MFCC + SDC Feature Extractor
+MFCC + SDC Feature Extractor  (Paper 2 spec)
 IED Disfluency Dataset
+
+Reproduces the MFCC + modified SDC features from:
+    Mehrotra et al., "Towards improving Disfluency Detection from Speech
+    using Shifted Delta Cepstral Coefficients", IC3 2022.
 
 Feature configuration
 ---------------------
 Sample rate : 16000 Hz
-Window      : 25 ms
+Window      : 25 ms (Hamming)
 Hop         : 10 ms
-MFCC        : 13
-Energy      : 1
+MFCC        : 13 (C0..C12 via librosa)
+Energy      : 1 (frame RMS)
 Base dim    : 14
 
-SDC configuration : 14-1-2-7
-SDC dimension     : 210
+Per-file mean-variance normalization is applied to the 14-dim base
+BEFORE SDC computation (paper Section 3.3: "The 14-dimensional feature
+vector (13 MFCC + energy) obtained per frame is then mean-variance
+normalized and used to obtain SDC features.").
 
-Final dimension   : 224
+SDC (modified):
+    Delta at shift i:  dc(t, i) = c(t + i*p + d) - c(t + i*p - d)
+    i ranges over -K .. +K  ->  (2K + 1) shifted delta blocks
+    Paper's chosen parameters: N=14, d=1, p=2
+        K = 7  for filled pause / prolongation  ->  210 SDC dims
+        K = 12 for word / part-word repetition  ->  350 SDC dims
+
+This module defaults to K = 7 -> 210 SDC dims, giving 224-dim total.
+Pass sdc_k=12 to the constructor for repetition-type disfluencies.
 """
 
 import numpy as np
@@ -115,18 +129,19 @@ class MFCCSDCExtractor(BaseFeatureExtractor):
 
     def _compute_base_features(self, segment: np.ndarray) -> np.ndarray:
         """
-        Compute the 14-dimensional base feature sequence.
+        Compute the 14-dimensional base feature sequence, mean-variance
+        normalized per segment (paper Section 3.3).
 
         Returns
         -------
         np.ndarray
             Shape: (14, T)
 
-            13 MFCC coefficients
-            + 1 energy feature
+            13 MFCC coefficients (Hamming window)
+            + 1 frame RMS energy
+            mean-variance normalized along the time axis.
         """
 
-        # MFCC
         mfcc = librosa.feature.mfcc(
             y=segment,
             sr=self.sample_rate,
@@ -134,99 +149,84 @@ class MFCCSDCExtractor(BaseFeatureExtractor):
             n_fft=self.win_length,
             win_length=self.win_length,
             hop_length=self.hop_length,
+            window="hamming",
         )
 
-        # Frame-level energy
         energy = librosa.feature.rms(
             y=segment,
             frame_length=self.win_length,
             hop_length=self.hop_length,
         )
 
-        # Make sure both have the same number of frames
         min_frames = min(mfcc.shape[1], energy.shape[1])
 
         mfcc = mfcc[:, :min_frames]
         energy = energy[:, :min_frames]
 
-        # 13 MFCC + 1 energy
-        base_features = np.vstack([mfcc, energy])
+        base_features = np.vstack([mfcc, energy]).astype(np.float32)
+
+        # Per-segment mean-variance normalization (paper Section 3.3).
+        mean = base_features.mean(axis=1, keepdims=True)
+        std = base_features.std(axis=1, keepdims=True)
+        base_features = (base_features - mean) / (std + np.finfo(np.float32).eps)
 
         return base_features.astype(np.float32)
 
     def _compute_sdc(self, base_features: np.ndarray) -> np.ndarray:
         """
-        Compute Shifted Delta Cepstral features.
+        Compute modified Shifted Delta Cepstral (SDC) features
+        exactly as defined in the paper (Section 2.1, equation 1,
+        with the modification described in Section 3.3).
+
+        For each frame t and each shift i in [-K, K]:
+            dc(t, i) = c(t + i*p + d) - c(t + i*p - d)
+
+        The (2K + 1) shifted delta vectors are stacked along the
+        feature axis, giving N * (2K + 1) SDC dimensions per frame.
+        Boundary frames are handled by edge padding on the base
+        features (equivalent to replicating the first / last frame).
 
         Parameters
         ----------
         base_features : np.ndarray
-            Shape: (14, T)
+            Shape: (N, T)  where N = 14 (13 MFCC + energy)
 
         Returns
         -------
         np.ndarray
-            Shape: (210, T)
-
-        Configuration:
-            N = 14
-            d = 1
-            p = 2
-            k = 7
-
-        This implementation concatenates 15 shifted delta blocks:
-            -7 ... 0 ... +7
-
-        Therefore:
-            14 × 15 = 210 dimensions.
+            Shape: (N * (2K + 1), T)
+            Default K = 7  ->  (210, T)
         """
 
         N, T = base_features.shape
+        d = self.sdc_d
+        p = self.sdc_p
+        K = self.sdc_k
 
-        # Calculate first-order delta features.
-        delta = librosa.feature.delta(
+        # Pad enough on both sides that every requested offset
+        # (t + i*p +/- d) stays in bounds for all t in [0, T).
+        max_offset = K * p + d
+
+        padded = np.pad(
             base_features,
-            width=3,
-            order=1,
-            axis=1,
+            ((0, 0), (max_offset, max_offset)),
+            mode="edge",
         )
 
         shifted_blocks = []
 
-        # Shifts from -7 to +7
-        for shift_index in range(-self.sdc_k, self.sdc_k + 1):
-            shift = shift_index * self.sdc_p
+        for i in range(-K, K + 1):
+            shift = i * p
 
-            shifted = np.zeros_like(delta)
+            plus = padded[:, max_offset + shift + d : max_offset + shift + d + T]
+            minus = padded[:, max_offset + shift - d : max_offset + shift - d + T]
 
-            if shift == 0:
-                shifted = delta
+            shifted_blocks.append(plus - minus)
 
-            elif shift > 0:
-                # Future shift
-                shifted[:, :-shift] = delta[:, shift:]
-
-                # Replicate last frame at the boundary
-                shifted[:, -shift:] = delta[:, -1:]
-
-            else:
-                # Past shift
-                amount = abs(shift)
-
-                shifted[:, amount:] = delta[:, :-amount]
-
-                # Replicate first frame at the boundary
-                shifted[:, :amount] = delta[:, :1]
-
-            shifted_blocks.append(shifted)
-
-        # Concatenate all 15 blocks
         sdc = np.concatenate(shifted_blocks, axis=0)
 
-        # Expected:
-        # 14 × 15 = 210
-        assert sdc.shape[0] == self.sdc_dim, (
-            f"Unexpected SDC dimension: {sdc.shape[0]}, expected {self.sdc_dim}"
+        assert sdc.shape == (self.sdc_dim, T), (
+            f"Unexpected SDC shape: {sdc.shape}, expected ({self.sdc_dim}, {T})"
         )
 
         return sdc.astype(np.float32)
