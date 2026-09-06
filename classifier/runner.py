@@ -32,7 +32,7 @@ from classifier.cache import build_cache
 from classifier.config import LOGS_DIR
 from classifier.data import all_task_ids, discover_pairs
 from classifier.report import build_full_report
-from classifier.splits import make_random_split
+from classifier.splits import make_random_split, make_speaker_split
 from classifier.train import Run, run_one
 
 
@@ -96,7 +96,11 @@ def main():
                            "Check IED_DATASET_DIR.")
     print(f"Discovered {len(pairs)} files")
 
-    split = make_random_split([p.stem for p in pairs], scheme=args.split_scheme)
+    stems = [p.stem for p in pairs]
+    if args.split_scheme == "speaker_held_out":
+        split = make_speaker_split(stems, scheme=args.split_scheme)
+    else:
+        split = make_random_split(stems, scheme=args.split_scheme)
     print(f"Split scheme={args.split_scheme}  "
           f"train={len(split['train'])} val={len(split['val'])} test={len(split['test'])}")
 

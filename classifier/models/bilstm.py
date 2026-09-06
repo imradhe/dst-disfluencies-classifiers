@@ -69,10 +69,17 @@ class BiLSTMConfig:
     dropout_layer1: float = 0.2
     lr: float = 1e-3
     optimiser: str = "adam"
-    batch_size: int = 8               # sequences per batch (files are long)
+    batch_size: int = 8               # sequences per batch
     max_epochs: int = 50
     early_stop_patience: int = 10
     val_frac_of_train: float = 0.10
+    # Sequence handling (spec section 7c):
+    #   chunk_frames = None -> full-file sequences (only viable when
+    #                          files are short, e.g. 8-12s clips).
+    #   chunk_frames = N    -> chunked mode with stride = chunk_frames
+    #                          (non-overlapping), N frames per window.
+    # Default 3000 frames = 30 s at 10 ms hop.
+    chunk_frames: Optional[int] = 3000
     device: str = "cuda" if torch.cuda.is_available() else "cpu"
     random_state: int = 42
 
@@ -120,6 +127,32 @@ def build_sequences(
             keep_mask=keep,
         ))
     return seqs
+
+
+def chunk_sequences(seqs: List[Sequence],
+                    chunk_frames: int) -> List[Sequence]:
+    """
+    Split each per-file Sequence into non-overlapping windows of at most
+    `chunk_frames` frames. The parent stem is preserved so predictions
+    can be concatenated back per file in order.
+    """
+    if chunk_frames is None or chunk_frames <= 0:
+        return seqs
+    out: List[Sequence] = []
+    for s in seqs:
+        T = len(s)
+        if T <= chunk_frames:
+            out.append(s)
+            continue
+        for start in range(0, T, chunk_frames):
+            end = min(start + chunk_frames, T)
+            out.append(Sequence(
+                stem=s.stem,
+                X=s.X[start:end],
+                y=s.y[start:end],
+                keep_mask=s.keep_mask.copy(),  # not sliced -- unused post-chunking
+            ))
+    return out
 
 
 def _pad_batch(seqs: List[Sequence]
@@ -175,6 +208,11 @@ def train_bilstm(
         val_ids = set(idx[:n_val].tolist())
         val_seqs   = [s for i, s in enumerate(train_seqs) if i in val_ids]
         train_seqs = [s for i, s in enumerate(train_seqs) if i not in val_ids]
+
+    # Chunk sequences AFTER the val split so val chunks stay from
+    # file-disjoint speakers.
+    train_seqs = chunk_sequences(train_seqs, cfg.chunk_frames)
+    val_seqs   = chunk_sequences(val_seqs,   cfg.chunk_frames)
 
     D = train_seqs[0].X.shape[1]
     model = BiLSTMTagger(
@@ -262,21 +300,27 @@ def predict_bilstm(
     model: BiLSTMTagger,
     seqs: List[Sequence],
     batch_size: int = 8,
+    chunk_frames: Optional[int] = None,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Concatenate per-frame predictions across all sequences in file order.
+    Concatenate per-frame predictions across all sequences in the same
+    order the caller passed them (grouped by stem).
 
-    Returns (y_pred, y_score) with the same contract as run_rf.
+    If `chunk_frames` is given, each Sequence is chunked before
+    inference and predictions are concatenated back per stem.
     """
     device = next(model.parameters()).device
     model.eval()
 
+    if chunk_frames:
+        chunked = chunk_sequences(seqs, chunk_frames)
+    else:
+        chunked = seqs
+
     preds_all, scores_all = [], []
-    rng = np.random.default_rng(0)  # order-preserving iteration
-    order = np.arange(len(seqs))
     with torch.no_grad():
-        for i in range(0, len(order), batch_size):
-            batch = [seqs[j] for j in order[i:i + batch_size]]
+        for i in range(0, len(chunked), batch_size):
+            batch = chunked[i:i + batch_size]
             X, _y, lengths = _pad_batch(batch)
             X, lengths = X.to(device), lengths.to(device)
             logits = model(X, lengths).cpu().numpy()

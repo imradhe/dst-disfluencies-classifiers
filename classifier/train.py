@@ -63,6 +63,14 @@ def _apply_standardiser(X: np.ndarray, stats: Dict) -> np.ndarray:
     return ((X - stats["mean"]) / stats["std"]).astype(np.float32)
 
 
+def _stem_id_for(stem: str, ordered_seqs) -> int:
+    """Return the position of `stem` in a list of per-file Sequences."""
+    for i, s in enumerate(ordered_seqs):
+        if s.stem == stem:
+            return i
+    return -1
+
+
 # ---------------------------------------------------------------------
 # Run container
 # ---------------------------------------------------------------------
@@ -300,10 +308,16 @@ def run_bilstm(r: Run,
         val_seqs=val_seqs, class_weight_tensor=cw,
     )
 
-    y_pred, y_score = predict_bilstm(model, test_seqs)
-    y_true = np.concatenate([s.y for s in test_seqs])
+    # Chunk test sequences for inference too, so long files don't blow
+    # memory. Chunk order preserves stem grouping, so the concatenated
+    # per-frame vector still aligns with the test-set frame labels.
+    from classifier.models.bilstm import chunk_sequences
+    test_chunks = chunk_sequences(test_seqs, cfg.chunk_frames)
+    y_pred, y_score = predict_bilstm(model, test_chunks)
+    y_true = np.concatenate([s.y for s in test_chunks])
     s_idx  = np.concatenate([
-        np.full(len(s.y), i, dtype=np.int32) for i, s in enumerate(test_seqs)
+        np.full(len(s.y), _stem_id_for(s.stem, test_seqs), dtype=np.int32)
+        for s in test_chunks
     ])
 
     metrics = extended_metrics(
