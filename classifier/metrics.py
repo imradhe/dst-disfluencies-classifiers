@@ -92,6 +92,62 @@ def frame_metrics(
     return out
 
 
+def extended_metrics(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    stem_index: np.ndarray,
+    task_type: str,
+    class_names: List[str],
+    y_score: Optional[np.ndarray] = None,
+    bootstrap_n: int = 1000,
+    median_window: int = 5,
+    min_event_ms: float = 30.0,
+) -> Dict:
+    """
+    Frame-level metrics + smoothed-frame metrics + event-level metrics +
+    bootstrap 95% CI on macro F1.
+    """
+    from classifier.postproc import event_metrics, smooth_predictions
+    from classifier.stats import bootstrap_f1_ci
+
+    frame = frame_metrics(
+        y_true=y_true, y_pred=y_pred, task_type=task_type,
+        class_names=class_names, y_score=y_score,
+    )
+
+    # For binary tasks fluent_id = 0 (class_names[0] == 'Fluent'/'not_<cls>').
+    fluent_id = 0
+
+    y_pred_smooth = smooth_predictions(
+        y_pred, stem_index=stem_index,
+        median_window=median_window, min_event_ms=min_event_ms,
+        fluent_id=fluent_id,
+    )
+
+    frame_smoothed = frame_metrics(
+        y_true=y_true, y_pred=y_pred_smooth, task_type=task_type,
+        class_names=class_names, y_score=y_score,
+    )
+
+    events = event_metrics(
+        y_true=y_true, y_pred=y_pred_smooth,
+        stem_index=stem_index, class_names=class_names, fluent_id=fluent_id,
+    )
+
+    ci = bootstrap_f1_ci(y_true, y_pred, n_resamples=bootstrap_n)
+
+    return {
+        **frame,
+        "smoothed":     frame_smoothed,
+        "events":       events,
+        "f1_macro_ci":  ci,
+        "postproc": {
+            "median_window":   median_window,
+            "min_event_ms":    min_event_ms,
+        },
+    }
+
+
 def summarise_metrics(m: Dict) -> str:
     """Compact one-liner for logs."""
     if m["task_type"] == "binary":
