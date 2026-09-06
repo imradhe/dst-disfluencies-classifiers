@@ -35,12 +35,12 @@ pip-delete-this-directory.txt
 IED/
 IED_*/
 
-# Runtime output
-cache/
-splits/
-results/
-models/
-predictions/
-confusion/
-roc/
-logs/
+# Runtime output (root-level dirs only; classifier/models is source)
+/cache/
+/splits/
+/results/
+/models/
+/predictions/
+/confusion/
+/roc/
+/logs/
