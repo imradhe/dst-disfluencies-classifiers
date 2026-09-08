@@ -1,0 +1,8 @@
+OK  mfcc_sdc_mod_k7__dnn__fluent_vs_disfluent
+OK  mfcc_sdc_mod_k7__dnn__multiclass
+OK  mfcc_sdc_mod_k7__dnn__fluent_vs_I
+OK  mfcc_sdc_mod_k7__dnn__fluent_vs_PR
+OK  mfcc_sdc_mod_k7__dnn__fluent_vs_PhR
+OK  mfcc_sdc_mod_k7__dnn__fluent_vs_WR
+OK  mfcc_sdc_mod_k7__dnn__fluent_vs_PWR
+OK  mfcc_sdc_mod_k7__dnn__fluent_vs_P

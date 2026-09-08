@@ -1,0 +1,30 @@
+==============================================================================
+Config C: SMOTE(whole dataset) -> stratified 80:20 split -> RF
+==============================================================================
+  raw minority frames total: 146733
+  raw majority frames total: 7218589
+  subsampling majority 7218589 -> 500000
+  capped X: (646731, 315)  counts={np.int64(0): np.int64(499998), np.int64(1): np.int64(146733)}
+  SMOTE minority to majority count ...
+  post-SMOTE: (999996, 315)  counts={np.int64(0): np.int64(499998), np.int64(1): np.int64(499998)}
+  train: (799996, 315)  test: (200000, 315)
+  test counts: {np.int64(0): np.int64(100000), np.int64(1): np.int64(100000)}
+  fitting RF...
+  fit in 215.9s
+
+--- Evaluation on the SMOTE'd test (balanced) ---
+  [C-bal] acc=0.8821  AUC=0.9495  pos-I  P=0.8876  R=0.8751  F1=0.8813  supp=100000  |  Fluent F1=0.8830  supp=100000  |  macro-F1=0.8821  weighted-F1=0.8821
+
+--- Redo with natural-prevalence test set ---
+  natural train pre-SMOTE: (517384, 315)  test: (129347, 315)  test counts={np.int64(0): np.int64(100000), np.int64(1): np.int64(29347)}
+  train post-SMOTE: (799996, 315)
+  fitting RF (natural-test setup)...
+  fit in 217.7s
+
+--- Evaluation on natural-prevalence test ---
+  [C-nat] acc=0.8341  AUC=0.8630  pos-I  P=0.6353  R=0.6315  F1=0.6334  supp=29347  |  Fluent F1=0.8928  supp=100000  |  macro-F1=0.7631  weighted-F1=0.8340
+
+==============================================================================
+PAPER 1 TABLE V FILLED PAUSE:  acc = 0.9384   F1 = 0.937
+==============================================================================
+Saved -> results/paper_repro_C.json

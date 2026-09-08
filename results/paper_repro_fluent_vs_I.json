@@ -1,0 +1,38 @@
+[
+  {
+    "name": "A. Paper config (random split + SMOTE)",
+    "accuracy": 0.8896347559496827,
+    "roc_auc": 0.8195251733452737,
+    "pos_precision": 0.12574667695122607,
+    "pos_recall": 0.57461371367679,
+    "pos_f1": 0.20633881068193358,
+    "pos_support": 24399,
+    "train_shape": [
+      1000000,
+      315
+    ],
+    "test_shape": [
+      977237,
+      315
+    ],
+    "elapsed": 311.46386981010437
+  },
+  {
+    "name": "B. Speaker-held-out + SMOTE",
+    "accuracy": 0.9237261397696798,
+    "roc_auc": 0.7327675186987194,
+    "pos_precision": 0.07726413249005673,
+    "pos_recall": 0.34130184331797236,
+    "pos_f1": 0.1260035089584773,
+    "pos_support": 3472,
+    "train_shape": [
+      1000000,
+      315
+    ],
+    "test_shape": [
+      215526,
+      315
+    ],
+    "elapsed": 316.72072887420654
+  }
+]

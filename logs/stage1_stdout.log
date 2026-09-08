@@ -1,0 +1,366 @@
+Features   : ['mfcc45', 'mfcc_sdc_mod_k7']
+Classifiers: ['rf', 'dnn']
+Tasks      : ['fluent_vs_disfluent', 'multiclass', 'fluent_vs_I', 'fluent_vs_PR', 'fluent_vs_PhR', 'fluent_vs_WR', 'fluent_vs_PWR', 'fluent_vs_P']
+Discovered 132 files
+Split scheme=speaker_held_out  train=117 val=11 test=4
+Building feature cache ...
+[   1/132] IED_INTERN_1__speaker_1                  mfcc45               ok
+[   1/132] IED_INTERN_1__speaker_1                  mfcc_sdc_mod_k7      ok
+[   2/132] IED_INTERN_1__speaker_2                  mfcc45               ok
+[   2/132] IED_INTERN_1__speaker_2                  mfcc_sdc_mod_k7      ok
+[   3/132] IED_INTERN_1__speaker_3                  mfcc45               ok
+[   3/132] IED_INTERN_1__speaker_3                  mfcc_sdc_mod_k7      ok
+[   4/132] IED_INTERN_1__speaker_4                  mfcc45               ok
+[   4/132] IED_INTERN_1__speaker_4                  mfcc_sdc_mod_k7      ok
+[   5/132] IED_INTERN_2__speaker_5                  mfcc45               ok
+[   5/132] IED_INTERN_2__speaker_5                  mfcc_sdc_mod_k7      ok
+[   6/132] IED_INTERN_2__speaker_6                  mfcc45               ok
+[   6/132] IED_INTERN_2__speaker_6                  mfcc_sdc_mod_k7      ok
+[   7/132] IED_INTERN_2__speaker_7                  mfcc45               ok
+[   7/132] IED_INTERN_2__speaker_7                  mfcc_sdc_mod_k7      ok
+[   8/132] IED_INTERN_2__speaker_8                  mfcc45               ok
+[   8/132] IED_INTERN_2__speaker_8                  mfcc_sdc_mod_k7      ok
+[   9/132] IED_INTERN_3__speaker_10                 mfcc45               ok
+[   9/132] IED_INTERN_3__speaker_10                 mfcc_sdc_mod_k7      ok
+[  10/132] IED_INTERN_3__speaker_11                 mfcc45               ok
+[  10/132] IED_INTERN_3__speaker_11                 mfcc_sdc_mod_k7      ok
+[  11/132] IED_INTERN_3__speaker_12                 mfcc45               ok
+[  11/132] IED_INTERN_3__speaker_12                 mfcc_sdc_mod_k7      ok
+[  12/132] IED_INTERN_3__speaker_9                  mfcc45               ok
+[  12/132] IED_INTERN_3__speaker_9                  mfcc_sdc_mod_k7      ok
+[  13/132] IED_INTERN_7__speaker_25                 mfcc45               ok
+[  13/132] IED_INTERN_7__speaker_25                 mfcc_sdc_mod_k7      ok
+[  14/132] IED_INTERN_7__speaker_26                 mfcc45               ok
+[  14/132] IED_INTERN_7__speaker_26                 mfcc_sdc_mod_k7      ok
+[  15/132] IED_INTERN_7__speaker_27                 mfcc45               ok
+[  15/132] IED_INTERN_7__speaker_27                 mfcc_sdc_mod_k7      ok
+[  16/132] IED_INTERN_7__speaker_28                 mfcc45               ok
+[  16/132] IED_INTERN_7__speaker_28                 mfcc_sdc_mod_k7      ok
+[  17/132] IED_INTERN_7__speaker_29                 mfcc45               ok
+[  17/132] IED_INTERN_7__speaker_29                 mfcc_sdc_mod_k7      ok
+[  18/132] IED_INTERN_7__speaker_30                 mfcc45               ok
+[  18/132] IED_INTERN_7__speaker_30                 mfcc_sdc_mod_k7      ok
+[  19/132] intern1__1_1_Speaker_02_002              mfcc45               ok
+[  19/132] intern1__1_1_Speaker_02_002              mfcc_sdc_mod_k7      ok
+[  20/132] intern1__1_1_Speaker_03_001              mfcc45               ok
+[  20/132] intern1__1_1_Speaker_03_001              mfcc_sdc_mod_k7      ok
+[  21/132] intern1__1_1_Speaker_03_002              mfcc45               ok
+[  21/132] intern1__1_1_Speaker_03_002              mfcc_sdc_mod_k7      ok
+[  22/132] intern1__1_1_Speaker_04_001              mfcc45               ok
+[  22/132] intern1__1_1_Speaker_04_001              mfcc_sdc_mod_k7      ok
+[  23/132] intern1__1_1_Speaker_05_001              mfcc45               ok
+[  23/132] intern1__1_1_Speaker_05_001              mfcc_sdc_mod_k7      ok
+[  24/132] intern1__1_2_Speaker_05_001              mfcc45               ok
+[  24/132] intern1__1_2_Speaker_05_001              mfcc_sdc_mod_k7      ok
+[  25/132] intern1__1_3_Speaker_01_001              mfcc45               ok
+[  25/132] intern1__1_3_Speaker_01_001              mfcc_sdc_mod_k7      ok
+[  26/132] intern1__1_3_Speaker_04_001              mfcc45               ok
+[  26/132] intern1__1_3_Speaker_04_001              mfcc_sdc_mod_k7      ok
+[  27/132] intern1__1_3_Speaker_05_001              mfcc45               ok
+[  27/132] intern1__1_3_Speaker_05_001              mfcc_sdc_mod_k7      ok
+[  28/132] intern1__2_2_Speaker_05_001              mfcc45               ok
+[  28/132] intern1__2_2_Speaker_05_001              mfcc_sdc_mod_k7      ok
+[  29/132] intern1__2_3_Speaker_05_001              mfcc45               ok
+[  29/132] intern1__2_3_Speaker_05_001              mfcc_sdc_mod_k7      ok
+[  30/132] intern1__4_2_Speaker_05_001              mfcc45               ok
+[  30/132] intern1__4_2_Speaker_05_001              mfcc_sdc_mod_k7      ok
+[  31/132] intern1__5_1_Speaker_05_001              mfcc45               ok
+[  31/132] intern1__5_1_Speaker_05_001              mfcc_sdc_mod_k7      ok
+[  32/132] intern1__5_1_Speaker_05_002              mfcc45               ok
+[  32/132] intern1__5_1_Speaker_05_002              mfcc_sdc_mod_k7      ok
+[  33/132] intern2__1_1_Speaker_08_001              mfcc45               ok
+[  33/132] intern2__1_1_Speaker_08_001              mfcc_sdc_mod_k7      ok
+[  34/132] intern2__1_1_Speaker_08_002              mfcc45               ok
+[  34/132] intern2__1_1_Speaker_08_002              mfcc_sdc_mod_k7      ok
+[  35/132] intern2__1_2_Speaker_08_001              mfcc45               ok
+[  35/132] intern2__1_2_Speaker_08_001              mfcc_sdc_mod_k7      ok
+[  36/132] intern2__1_2_Speaker_08_002              mfcc45               ok
+[  36/132] intern2__1_2_Speaker_08_002              mfcc_sdc_mod_k7      ok
+[  37/132] intern2__1_2_Speaker_08_003              mfcc45               ok
+[  37/132] intern2__1_2_Speaker_08_003              mfcc_sdc_mod_k7      ok
+[  38/132] intern2__1_3_Speaker_08_001              mfcc45               ok
+[  38/132] intern2__1_3_Speaker_08_001              mfcc_sdc_mod_k7      ok
+[  39/132] intern2__1_3_Speaker_08_002              mfcc45               ok
+[  39/132] intern2__1_3_Speaker_08_002              mfcc_sdc_mod_k7      ok
+[  40/132] intern2__1_3_Speaker_08_003              mfcc45               ok
+[  40/132] intern2__1_3_Speaker_08_003              mfcc_sdc_mod_k7      ok
+[  41/132] intern2__1_4_Speaker_08_001              mfcc45               ok
+[  41/132] intern2__1_4_Speaker_08_001              mfcc_sdc_mod_k7      ok
+[  42/132] intern2__1_4_Speaker_08_002              mfcc45               ok
+[  42/132] intern2__1_4_Speaker_08_002              mfcc_sdc_mod_k7      ok
+[  43/132] intern2__2_1_Speaker_08_001              mfcc45               ok
+[  43/132] intern2__2_1_Speaker_08_001              mfcc_sdc_mod_k7      ok
+[  44/132] intern2__2_2_Speaker_08_001              mfcc45               ok
+[  44/132] intern2__2_2_Speaker_08_001              mfcc_sdc_mod_k7      ok
+[  45/132] intern2__2_2_Speaker_08_002              mfcc45               ok
+[  45/132] intern2__2_2_Speaker_08_002              mfcc_sdc_mod_k7      ok
+[  46/132] intern2__2_3_Speaker_08_001              mfcc45               ok
+[  46/132] intern2__2_3_Speaker_08_001              mfcc_sdc_mod_k7      ok
+[  47/132] intern2__2_3_Speaker_08_002              mfcc45               ok
+[  47/132] intern2__2_3_Speaker_08_002              mfcc_sdc_mod_k7      ok
+[  48/132] intern2__3_1_Speaker_08_001              mfcc45               ok
+[  48/132] intern2__3_1_Speaker_08_001              mfcc_sdc_mod_k7      ok
+[  49/132] intern2__3_1_Speaker_08_003              mfcc45               ok
+[  49/132] intern2__3_1_Speaker_08_003              mfcc_sdc_mod_k7      ok
+[  50/132] intern2__3_1_Speaker_08_004              mfcc45               ok
+[  50/132] intern2__3_1_Speaker_08_004              mfcc_sdc_mod_k7      ok
+[  51/132] intern2__3_1_Speaker_08_005              mfcc45               ok
+[  51/132] intern2__3_1_Speaker_08_005              mfcc_sdc_mod_k7      ok
+[  52/132] intern2__3_1_Speaker_08_007              mfcc45               ok
+[  52/132] intern2__3_1_Speaker_08_007              mfcc_sdc_mod_k7      ok
+[  53/132] intern2__3_1_Speaker_08_008              mfcc45               ok
+[  53/132] intern2__3_1_Speaker_08_008              mfcc_sdc_mod_k7      ok
+[  54/132] intern2__3_1_Speaker_08_009              mfcc45               ok
+[  54/132] intern2__3_1_Speaker_08_009              mfcc_sdc_mod_k7      ok
+[  55/132] intern2__3_1_Speaker_08_011              mfcc45               ok
+[  55/132] intern2__3_1_Speaker_08_011              mfcc_sdc_mod_k7      ok
+[  56/132] intern2__3_2_Speaker_08_001              mfcc45               ok
+[  56/132] intern2__3_2_Speaker_08_001              mfcc_sdc_mod_k7      ok
+[  57/132] intern2__3_3_Speaker_08_002              mfcc45               ok
+[  57/132] intern2__3_3_Speaker_08_002              mfcc_sdc_mod_k7      ok
+[  58/132] intern2__4_2_Speaker_08_001              mfcc45               ok
+[  58/132] intern2__4_2_Speaker_08_001              mfcc_sdc_mod_k7      ok
+[  59/132] intern2__4_2_Speaker_08_002              mfcc45               ok
+[  59/132] intern2__4_2_Speaker_08_002              mfcc_sdc_mod_k7      ok
+[  60/132] intern2__4_3_Speaker_08_001              mfcc45               ok
+[  60/132] intern2__4_3_Speaker_08_001              mfcc_sdc_mod_k7      ok
+[  61/132] intern2__5_1_Speaker_08_001              mfcc45               ok
+[  61/132] intern2__5_1_Speaker_08_001              mfcc_sdc_mod_k7      ok
+[  62/132] intern2__5_1_Speaker_08_002              mfcc45               ok
+[  62/132] intern2__5_1_Speaker_08_002              mfcc_sdc_mod_k7      ok
+[  63/132] intern2__5_2_Speaker_08_001              mfcc45               ok
+[  63/132] intern2__5_2_Speaker_08_001              mfcc_sdc_mod_k7      ok
+[  64/132] intern2__5_3_Speaker_08_001              mfcc45               ok
+[  64/132] intern2__5_3_Speaker_08_001              mfcc_sdc_mod_k7      ok
+[  65/132] intern2__5_3_Speaker_08_002              mfcc45               ok
+[  65/132] intern2__5_3_Speaker_08_002              mfcc_sdc_mod_k7      ok
+[  66/132] intern2__5_4_Speaker_08_001              mfcc45               ok
+[  66/132] intern2__5_4_Speaker_08_001              mfcc_sdc_mod_k7      ok
+[  67/132] intern2__6_1 _Speaker_08_001             mfcc45               ok
+[  67/132] intern2__6_1 _Speaker_08_001             mfcc_sdc_mod_k7      ok
+[  68/132] intern2__6_1 _Speaker_08_002             mfcc45               ok
+[  68/132] intern2__6_1 _Speaker_08_002             mfcc_sdc_mod_k7      ok
+[  69/132] intern2__6_1 _Speaker_08_003             mfcc45               ok
+[  69/132] intern2__6_1 _Speaker_08_003             mfcc_sdc_mod_k7      ok
+[  70/132] intern2__6_3_Speaker_08_001              mfcc45               ok
+[  70/132] intern2__6_3_Speaker_08_001              mfcc_sdc_mod_k7      ok
+[  71/132] intern3__1_1_Speaker_12_001              mfcc45               ok
+[  71/132] intern3__1_1_Speaker_12_001              mfcc_sdc_mod_k7      ok
+[  72/132] intern3__1_1_Speaker_13_001              mfcc45               ok
+[  72/132] intern3__1_1_Speaker_13_001              mfcc_sdc_mod_k7      ok
+[  73/132] intern3__1_1_Speaker_13_002              mfcc45               ok
+[  73/132] intern3__1_1_Speaker_13_002              mfcc_sdc_mod_k7      ok
+[  74/132] intern3__1_1_Speaker_14_001              mfcc45               ok
+[  74/132] intern3__1_1_Speaker_14_001              mfcc_sdc_mod_k7      ok
+[  75/132] intern3__1_1_Speaker_15_001              mfcc45               ok
+[  75/132] intern3__1_1_Speaker_15_001              mfcc_sdc_mod_k7      ok
+[  76/132] intern3__1_1_Speaker_16_001              mfcc45               ok
+[  76/132] intern3__1_1_Speaker_16_001              mfcc_sdc_mod_k7      ok
+[  77/132] intern3__1_2_Speaker_13_001              mfcc45               ok
+[  77/132] intern3__1_2_Speaker_13_001              mfcc_sdc_mod_k7      ok
+[  78/132] intern3__1_2_Speaker_16_001              mfcc45               ok
+[  78/132] intern3__1_2_Speaker_16_001              mfcc_sdc_mod_k7      ok
+[  79/132] intern3__1_3_Speaker_10_001              mfcc45               ok
+[  79/132] intern3__1_3_Speaker_10_001              mfcc_sdc_mod_k7      ok
+[  80/132] intern3__1_3_Speaker_13_001              mfcc45               ok
+[  80/132] intern3__1_3_Speaker_13_001              mfcc_sdc_mod_k7      ok
+[  81/132] intern3__1_3_Speaker_16_001              mfcc45               ok
+[  81/132] intern3__1_3_Speaker_16_001              mfcc_sdc_mod_k7      ok
+[  82/132] intern3__2_1_Speaker_09_001              mfcc45               ok
+[  82/132] intern3__2_1_Speaker_09_001              mfcc_sdc_mod_k7      ok
+[  83/132] intern3__2_1_Speaker_09_002              mfcc45               ok
+[  83/132] intern3__2_1_Speaker_09_002              mfcc_sdc_mod_k7      ok
+[  84/132] intern3__2_1_Speaker_10_001              mfcc45               ok
+[  84/132] intern3__2_1_Speaker_10_001              mfcc_sdc_mod_k7      ok
+[  85/132] intern3__2_1_Speaker_13_001              mfcc45               ok
+[  85/132] intern3__2_1_Speaker_13_001              mfcc_sdc_mod_k7      ok
+[  86/132] intern3__2_1_Speaker_13_002              mfcc45               ok
+[  86/132] intern3__2_1_Speaker_13_002              mfcc_sdc_mod_k7      ok
+[  87/132] intern3__2_1_Speaker_13_004              mfcc45               ok
+[  87/132] intern3__2_1_Speaker_13_004              mfcc_sdc_mod_k7      ok
+[  88/132] intern3__2_1_Speaker_13_005              mfcc45               ok
+[  88/132] intern3__2_1_Speaker_13_005              mfcc_sdc_mod_k7      ok
+[  89/132] intern3__3_1_Speaker_16_007              mfcc45               ok
+[  89/132] intern3__3_1_Speaker_16_007              mfcc_sdc_mod_k7      ok
+[  90/132] intern3__3_2_Speaker_10_001              mfcc45               ok
+[  90/132] intern3__3_2_Speaker_10_001              mfcc_sdc_mod_k7      ok
+[  91/132] intern3__3_2_Speaker_13_001              mfcc45               ok
+[  91/132] intern3__3_2_Speaker_13_001              mfcc_sdc_mod_k7      ok
+[  92/132] intern3__3_2_Speaker_16_001              mfcc45               ok
+[  92/132] intern3__3_2_Speaker_16_001              mfcc_sdc_mod_k7      ok
+[  93/132] intern3__3_3_Speaker_09_001              mfcc45               ok
+[  93/132] intern3__3_3_Speaker_09_001              mfcc_sdc_mod_k7      ok
+[  94/132] intern3__3_3_Speaker_10_001              mfcc45               ok
+[  94/132] intern3__3_3_Speaker_10_001              mfcc_sdc_mod_k7      ok
+[  95/132] intern3__3_3_Speaker_10_002              mfcc45               ok
+[  95/132] intern3__3_3_Speaker_10_002              mfcc_sdc_mod_k7      ok
+[  96/132] intern3__3_3_Speaker_10_003              mfcc45               ok
+[  96/132] intern3__3_3_Speaker_10_003              mfcc_sdc_mod_k7      ok
+[  97/132] intern3__3_3_Speaker_16_001              mfcc45               ok
+[  97/132] intern3__3_3_Speaker_16_001              mfcc_sdc_mod_k7      ok
+[  98/132] intern3__3_3_Speaker_16_002              mfcc45               ok
+[  98/132] intern3__3_3_Speaker_16_002              mfcc_sdc_mod_k7      ok
+[  99/132] intern3__4_4_Speaker_11_001              mfcc45               ok
+[  99/132] intern3__4_4_Speaker_11_001              mfcc_sdc_mod_k7      ok
+[ 100/132] intern4__1_1_Speaker_18_001              mfcc45               ok
+[ 100/132] intern4__1_1_Speaker_18_001              mfcc_sdc_mod_k7      ok
+[ 101/132] intern4__1_1_Speaker_21_001              mfcc45               ok
+[ 101/132] intern4__1_1_Speaker_21_001              mfcc_sdc_mod_k7      ok
+[ 102/132] intern4__1_1_Speaker_22_001              mfcc45               ok
+[ 102/132] intern4__1_1_Speaker_22_001              mfcc_sdc_mod_k7      ok
+[ 103/132] intern4__1_1_Speaker_23_001              mfcc45               ok
+[ 103/132] intern4__1_1_Speaker_23_001              mfcc_sdc_mod_k7      ok
+[ 104/132] intern4__1_1_Speaker_23_002              mfcc45               ok
+[ 104/132] intern4__1_1_Speaker_23_002              mfcc_sdc_mod_k7      ok
+[ 105/132] intern4__1_1_Speaker_24_003              mfcc45               ok
+[ 105/132] intern4__1_1_Speaker_24_003              mfcc_sdc_mod_k7      ok
+[ 106/132] intern4__1_1_Speaker_25_001              mfcc45               ok
+[ 106/132] intern4__1_1_Speaker_25_001              mfcc_sdc_mod_k7      ok
+[ 107/132] intern4__1_2_Speaker_23_001              mfcc45               ok
+[ 107/132] intern4__1_2_Speaker_23_001              mfcc_sdc_mod_k7      ok
+[ 108/132] intern4__1_2_Speaker_25_001              mfcc45               ok
+[ 108/132] intern4__1_2_Speaker_25_001              mfcc_sdc_mod_k7      ok
+[ 109/132] intern4__1_3_Speaker_17_001              mfcc45               ok
+[ 109/132] intern4__1_3_Speaker_17_001              mfcc_sdc_mod_k7      ok
+[ 110/132] intern4__1_4_Speaker_22_001              mfcc45               ok
+[ 110/132] intern4__1_4_Speaker_22_001              mfcc_sdc_mod_k7      ok
+[ 111/132] intern4__3_2_Speaker_18_001              mfcc45               ok
+[ 111/132] intern4__3_2_Speaker_18_001              mfcc_sdc_mod_k7      ok
+[ 112/132] intern4__3_2_Speaker_22_001              mfcc45               ok
+[ 112/132] intern4__3_2_Speaker_22_001              mfcc_sdc_mod_k7      ok
+[ 113/132] intern5__1_1_Speaker_26_001              mfcc45               ok
+[ 113/132] intern5__1_1_Speaker_26_001              mfcc_sdc_mod_k7      ok
+[ 114/132] intern5__1_1_Speaker_27_001              mfcc45               ok
+[ 114/132] intern5__1_1_Speaker_27_001              mfcc_sdc_mod_k7      ok
+[ 115/132] intern5__1_1_Speaker_29_001              mfcc45               ok
+[ 115/132] intern5__1_1_Speaker_29_001              mfcc_sdc_mod_k7      ok
+[ 116/132] intern5__1_1_Speaker_29_002              mfcc45               ok
+[ 116/132] intern5__1_1_Speaker_29_002              mfcc_sdc_mod_k7      ok
+[ 117/132] intern5__1_1_Speaker_30_002              mfcc45               ok
+[ 117/132] intern5__1_1_Speaker_30_002              mfcc_sdc_mod_k7      ok
+[ 118/132] intern5__1_1_Speaker_30_003              mfcc45               ok
+[ 118/132] intern5__1_1_Speaker_30_003              mfcc_sdc_mod_k7      ok
+[ 119/132] intern5__1_1_Speaker_31_001              mfcc45               ok
+[ 119/132] intern5__1_1_Speaker_31_001              mfcc_sdc_mod_k7      ok
+[ 120/132] intern5__1_1_Speaker_32_002              mfcc45               ok
+[ 120/132] intern5__1_1_Speaker_32_002              mfcc_sdc_mod_k7      ok
+[ 121/132] intern5__1_1_Speaker_33_001              mfcc45               ok
+[ 121/132] intern5__1_1_Speaker_33_001              mfcc_sdc_mod_k7      ok
+[ 122/132] intern5__1_2_Speaker_29_001              mfcc45               ok
+[ 122/132] intern5__1_2_Speaker_29_001              mfcc_sdc_mod_k7      ok
+[ 123/132] intern5__1_3_Speaker_28_001              mfcc45               ok
+[ 123/132] intern5__1_3_Speaker_28_001              mfcc_sdc_mod_k7      ok
+[ 124/132] intern5__1_3_Speaker_30_001              mfcc45               ok
+[ 124/132] intern5__1_3_Speaker_30_001              mfcc_sdc_mod_k7      ok
+[ 125/132] intern5__2_3_Speaker_27_001              mfcc45               ok
+[ 125/132] intern5__2_3_Speaker_27_001              mfcc_sdc_mod_k7      ok
+[ 126/132] intern5__3_1_Speaker_27_001              mfcc45               ok
+[ 126/132] intern5__3_1_Speaker_27_001              mfcc_sdc_mod_k7      ok
+[ 127/132] intern5__3_1_Speaker_28_001              mfcc45               ok
+[ 127/132] intern5__3_1_Speaker_28_001              mfcc_sdc_mod_k7      ok
+[ 128/132] intern5__3_1_Speaker_30_001              mfcc45               ok
+[ 128/132] intern5__3_1_Speaker_30_001              mfcc_sdc_mod_k7      ok
+[ 129/132] intern5__3_1_Speaker_30_002              mfcc45               ok
+[ 129/132] intern5__3_1_Speaker_30_002              mfcc_sdc_mod_k7      ok
+[ 130/132] intern5__3_1_Speaker_30_003              mfcc45               ok
+[ 130/132] intern5__3_1_Speaker_30_003              mfcc_sdc_mod_k7      ok
+[ 131/132] intern5__3_2_Speaker_27_001              mfcc45               ok
+[ 131/132] intern5__3_2_Speaker_27_001              mfcc_sdc_mod_k7      ok
+[ 132/132] intern5__5_1_Speaker_27_001              mfcc45               ok
+[ 132/132] intern5__5_1_Speaker_27_001              mfcc_sdc_mod_k7      ok
+Total runs : 32
+
+=== 1/32  mfcc45__rf__fluent_vs_disfluent ===
+[run] mfcc45__rf__fluent_vs_disfluent  (182.5s)  acc=0.731  F1=0.494 (macro)  AUC=0.518  baseline=0.912
+
+=== 2/32  mfcc45__rf__multiclass ===
+[run] mfcc45__rf__multiclass  (20.9s)  acc=0.245  F1_macro=0.090  F1_micro=0.245  baseline=0.912
+
+=== 3/32  mfcc45__rf__fluent_vs_I ===
+[run] mfcc45__rf__fluent_vs_I  (42.9s)  acc=0.875  F1=0.512 (macro)  AUC=0.710  baseline=0.984
+
+=== 4/32  mfcc45__rf__fluent_vs_PR ===
+[run] mfcc45__rf__fluent_vs_PR  (29.5s)  acc=0.841  F1=0.469 (macro)  AUC=0.700  baseline=0.995
+
+=== 5/32  mfcc45__rf__fluent_vs_PhR ===
+[run] mfcc45__rf__fluent_vs_PhR  (43.1s)  acc=0.828  F1=0.463 (macro)  AUC=0.449  baseline=0.972
+
+=== 6/32  mfcc45__rf__fluent_vs_WR ===
+[run] mfcc45__rf__fluent_vs_WR  (32.7s)  acc=0.805  F1=0.463 (macro)  AUC=0.465  baseline=0.977
+
+=== 7/32  mfcc45__rf__fluent_vs_PWR ===
+[run] mfcc45__rf__fluent_vs_PWR  (53.9s)  acc=0.738  F1=0.443 (macro)  AUC=0.554  baseline=0.985
+
+=== 8/32  mfcc45__rf__fluent_vs_P ===
+[run] mfcc45__rf__fluent_vs_P  (14.9s)  acc=0.935  F1=0.483 (macro)  AUC=0.326  baseline=1.000
+
+=== 9/32  mfcc45__dnn__fluent_vs_disfluent ===
+[run] mfcc45__dnn__fluent_vs_disfluent  (1196.9s, 19 ep)  acc=0.867  F1=0.521 (macro)  AUC=0.523  baseline=0.912
+
+=== 10/32  mfcc45__dnn__multiclass ===
+[run] mfcc45__dnn__multiclass  (63.5s, 13 ep)  acc=0.379  F1_macro=0.112  F1_micro=0.379  baseline=0.912
+
+=== 11/32  mfcc45__dnn__fluent_vs_I ===
+[run] mfcc45__dnn__fluent_vs_I  (306.1s, 21 ep)  acc=0.924  F1=0.536 (macro)  AUC=0.671  baseline=0.984
+
+=== 12/32  mfcc45__dnn__fluent_vs_PR ===
+[run] mfcc45__dnn__fluent_vs_PR  (180.2s, 21 ep)  acc=0.900  F1=0.483 (macro)  AUC=0.618  baseline=0.995
+
+=== 13/32  mfcc45__dnn__fluent_vs_PhR ===
+[run] mfcc45__dnn__fluent_vs_PhR  (364.1s, 26 ep)  acc=0.913  F1=0.489 (macro)  AUC=0.493  baseline=0.972
+
+=== 14/32  mfcc45__dnn__fluent_vs_WR ===
+[run] mfcc45__dnn__fluent_vs_WR  (133.8s, 13 ep)  acc=0.939  F1=0.498 (macro)  AUC=0.515  baseline=0.977
+
+=== 15/32  mfcc45__dnn__fluent_vs_PWR ===
+[run] mfcc45__dnn__fluent_vs_PWR  (253.2s, 14 ep)  acc=0.911  F1=0.491 (macro)  AUC=0.526  baseline=0.985
+
+=== 16/32  mfcc45__dnn__fluent_vs_P ===
+[run] mfcc45__dnn__fluent_vs_P  (28.6s, 17 ep)  acc=0.894  F1=0.473 (macro)  AUC=0.615  baseline=1.000
+
+=== 17/32  mfcc_sdc_mod_k7__rf__fluent_vs_disfluent ===
+[run] mfcc_sdc_mod_k7__rf__fluent_vs_disfluent  (521.0s)  acc=0.734  F1=0.490 (macro)  AUC=0.496  baseline=0.912
+
+=== 18/32  mfcc_sdc_mod_k7__rf__multiclass ===
+[run] mfcc_sdc_mod_k7__rf__multiclass  (201.9s)  acc=0.200  F1_macro=0.080  F1_micro=0.200  baseline=0.912
+
+=== 19/32  mfcc_sdc_mod_k7__rf__fluent_vs_I ===
+[run] mfcc_sdc_mod_k7__rf__fluent_vs_I  (191.7s)  acc=0.881  F1=0.517 (macro)  AUC=0.734  baseline=0.984
+
+=== 20/32  mfcc_sdc_mod_k7__rf__fluent_vs_PR ===
+[run] mfcc_sdc_mod_k7__rf__fluent_vs_PR  (155.6s)  acc=0.869  F1=0.477 (macro)  AUC=0.755  baseline=0.995
+
+=== 21/32  mfcc_sdc_mod_k7__rf__fluent_vs_PhR ===
+[run] mfcc_sdc_mod_k7__rf__fluent_vs_PhR  (204.8s)  acc=0.843  F1=0.467 (macro)  AUC=0.415  baseline=0.972
+
+=== 22/32  mfcc_sdc_mod_k7__rf__fluent_vs_WR ===
+[run] mfcc_sdc_mod_k7__rf__fluent_vs_WR  (185.6s)  acc=0.814  F1=0.461 (macro)  AUC=0.421  baseline=0.977
+
+=== 23/32  mfcc_sdc_mod_k7__rf__fluent_vs_PWR ===
+[run] mfcc_sdc_mod_k7__rf__fluent_vs_PWR  (159.9s)  acc=0.732  F1=0.439 (macro)  AUC=0.530  baseline=0.985
+
+=== 24/32  mfcc_sdc_mod_k7__rf__fluent_vs_P ===
+[run] mfcc_sdc_mod_k7__rf__fluent_vs_P  (133.5s)  acc=0.950  F1=0.487 (macro)  AUC=0.472  baseline=1.000
+
+=== 25/32  mfcc_sdc_mod_k7__dnn__fluent_vs_disfluent ===
+[run] mfcc_sdc_mod_k7__dnn__fluent_vs_disfluent  (1179.1s, 17 ep)  acc=0.882  F1=0.528 (macro)  AUC=0.510  baseline=0.912
+
+=== 26/32  mfcc_sdc_mod_k7__dnn__multiclass ===
+[run] mfcc_sdc_mod_k7__dnn__multiclass  (186.4s, 19 ep)  acc=0.332  F1_macro=0.105  F1_micro=0.332  baseline=0.912
+
+=== 27/32  mfcc_sdc_mod_k7__dnn__fluent_vs_I ===
+[run] mfcc_sdc_mod_k7__dnn__fluent_vs_I  (309.0s, 14 ep)  acc=0.948  F1=0.576 (macro)  AUC=0.768  baseline=0.984
+
+=== 28/32  mfcc_sdc_mod_k7__dnn__fluent_vs_PR ===
+[run] mfcc_sdc_mod_k7__dnn__fluent_vs_PR  (477.1s, 14 ep)  acc=0.908  F1=0.489 (macro)  AUC=0.711  baseline=0.995
+
+=== 29/32  mfcc_sdc_mod_k7__dnn__fluent_vs_PhR ===
+[run] mfcc_sdc_mod_k7__dnn__fluent_vs_PhR  (591.7s, 15 ep)  acc=0.904  F1=0.484 (macro)  AUC=0.447  baseline=0.972
+
+=== 30/32  mfcc_sdc_mod_k7__dnn__fluent_vs_WR ===
+[run] mfcc_sdc_mod_k7__dnn__fluent_vs_WR  (249.5s, 12 ep)  acc=0.945  F1=0.495 (macro)  AUC=0.459  baseline=0.977
+
+=== 31/32  mfcc_sdc_mod_k7__dnn__fluent_vs_PWR ===
+[run] mfcc_sdc_mod_k7__dnn__fluent_vs_PWR  (531.1s, 24 ep)  acc=0.881  F1=0.483 (macro)  AUC=0.514  baseline=0.985
+
+=== 32/32  mfcc_sdc_mod_k7__dnn__fluent_vs_P ===

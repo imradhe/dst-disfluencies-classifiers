@@ -1,0 +1,34 @@
+
+=== A. Paper config (random split + SMOTE) ===
+  split: train=119f, test=13f
+  raw train: (6388085, 315),  test: (977237, 315)
+  raw train class counts: {np.int64(0): np.int64(6265751), np.int64(1): np.int64(122334)}
+  test class counts     : {np.int64(0): np.int64(952838), np.int64(1): np.int64(24399)}
+  undersampling majority (0=6265751) -> 500000 before SMOTE
+  SMOTE'ing minority up to majority count ...
+  balanced train: (1000000, 315), counts: {np.int64(0): np.int64(500000), np.int64(1): np.int64(500000)}
+  training RF (class_weight=None) on (1000000, 315)...
+  fit in 311.5s
+  RESULT  acc=0.890  AUC=0.820  pos-I  P=0.126  R=0.575  F1=0.206  support=24399  (paper: F1=0.937)
+
+=== B. Speaker-held-out + SMOTE ===
+  split: train=128f, test=4f
+  raw train: (7149796, 315),  test: (215526, 315)
+  raw train class counts: {np.int64(0): np.int64(7006535), np.int64(1): np.int64(143261)}
+  test class counts     : {np.int64(0): np.int64(212054), np.int64(1): np.int64(3472)}
+  undersampling majority (0=7006535) -> 500000 before SMOTE
+  SMOTE'ing minority up to majority count ...
+  balanced train: (1000000, 315), counts: {np.int64(0): np.int64(500000), np.int64(1): np.int64(500000)}
+  training RF (class_weight=None) on (1000000, 315)...
+  fit in 316.7s
+  RESULT  acc=0.924  AUC=0.733  pos-I  P=0.077  R=0.341  F1=0.126  support=3472  (paper: F1=0.937)
+
+==============================================================================
+SUMMARY
+==============================================================================
+Paper 1 Table V (Fluent-vs-I, MFCC + RF + SMOTE):  F1 = 0.937
+
+  A. Paper config (random split + SMOTE)                pos-I F1 = 0.206  (P=0.126, R=0.575)
+  B. Speaker-held-out + SMOTE                           pos-I F1 = 0.126  (P=0.077, R=0.341)
+
+Saved -> results/paper_repro_fluent_vs_I.json
