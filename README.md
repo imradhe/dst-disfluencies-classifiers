@@ -82,8 +82,30 @@ scikit-learn (CPU, RAM-heavy — see note in `classifier/imbalance.py`).
 
 ## Running
 
+### `run_mfcc_experiments.py` — the MFCC sweep for the GPU box
+
+Self-contained driver: **`mfcc45` + `mfcc_sdc_mod_k7`  ×  `rf` + `dnn` + `bilstm`
+×  8 tasks = 48 runs**, on the committed `speaker_held_out` split, seed 42,
+with the dataclass-default model configs (echoed at startup). This is the
+existing 32-run `rf`/`dnn` sweep plus the 16 never-run `bilstm` combos.
+
 ```bash
-# Full grid: build feature cache for all baseline features, then train.
+python run_mfcc_experiments.py                 # full 48-run sweep (builds cache first)
+python run_mfcc_experiments.py --dry-run       # print the resolved grid, exit
+python run_mfcc_experiments.py --skip-existing # resume: skip tags with a results JSON
+python run_mfcc_experiments.py --no-cache-build
+python run_mfcc_experiments.py --classifiers bilstm
+```
+
+It reuses `splits/speaker_held_out.json` verbatim, streams `results/<tag>.json`
++ models + predictions, rebuilds `results/summary.md` / `all_runs.csv` /
+plots, and logs to `logs/mfcc_experiments_<ts>.log`. One failed run never
+stops the sweep.
+
+### Full grid via the package runner
+
+```bash
+# Build feature cache for all baseline features, then train.
 python -m classifier.runner
 
 # Subsets (each flag takes a space-separated list):
