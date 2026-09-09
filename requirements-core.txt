@@ -1,0 +1,20 @@
+# Core dependencies — needed for the MFCC / MFCC+SDC / SFFCC pipelines
+# and RF / DNN / BiLSTM classifiers. torch + torchaudio are installed
+# separately (see setup.sh / requirements.txt) so the CUDA build can be
+# chosen on the GPU box.
+#
+# Versions are the exact set from a clean .venv built by setup.sh on
+# macOS/arm64 + Python 3.11. See requirements-lock.txt for the full
+# transitive freeze.
+
+numpy==2.4.6
+scipy==1.17.1
+scikit-learn==1.9.0
+pandas==3.0.5
+matplotlib==3.11.1
+joblib==1.5.3
+tqdm==4.70.0
+
+soundfile==0.14.0
+librosa==0.11.0            # MFCC / MFCC+SDC / SFFCC + frame timing
+praat-parselmouth==0.4.7   # pitch contour for the prosody extractor

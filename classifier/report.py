@@ -37,10 +37,22 @@ def _iter_result_files() -> Iterable[Path]:
 
 
 def load_all_results() -> List[Dict]:
+    """
+    Every grid-run result JSON in RESULTS_DIR.
+
+    Files that are not grid runs (e.g. the ad-hoc `paper_repro_*.json`
+    probes, which use a different schema and may even be a top-level
+    list) are skipped rather than crashing the aggregator.
+    """
     out = []
     for p in _iter_result_files():
         with open(p) as f:
-            out.append(json.load(f))
+            try:
+                obj = json.load(f)
+            except json.JSONDecodeError:
+                continue
+        if isinstance(obj, dict) and "metrics" in obj and "tag" in obj:
+            out.append(obj)
     return out
 
 

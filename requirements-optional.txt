@@ -1,0 +1,15 @@
+# Optional dependencies — NOT needed for the MFCC x {rf,dnn,bilstm} grid
+# (run_mfcc_experiments.py). Install only if you need:
+#
+#   - gammatone        : prosody32 / prosody96 feature extraction
+#                        (ied_prosodic_acoustic_feature_extractor imports
+#                         `from gammatone.gtgram import gtgram` at load).
+#                        Git-only package.
+#   - imbalanced-learn : the SMOTE path in classifier/imbalance.smote(),
+#                        used by paper_repro*.py. The main runner uses
+#                        random undersampling and does not need it.
+#                        May pull an older scikit-learn — if it downgrades
+#                        sklearn, install it in a separate venv.
+
+gammatone @ git+https://github.com/detly/gammatone.git
+imbalanced-learn==0.14.2   # verified: keeps scikit-learn 1.9.0 (no downgrade)

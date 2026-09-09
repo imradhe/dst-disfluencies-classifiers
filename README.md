@@ -59,26 +59,47 @@ export IED_OUTPUT_ROOT=/scratch/disfluency-v2   # cache/results/models/... go he
 
 ## Setup
 
+One command — creates `./.venv` (Python 3.11), installs everything,
+verifies imports, writes `requirements-lock.txt`:
+
 ```bash
-python3.11 -m venv .venv
-. .venv/bin/activate
-pip install -U pip
-
-# GPU box: install the CUDA torch build first so pip keeps it
-pip install torch==2.13.0 torchaudio==2.11.0 --index-url https://download.pytorch.org/cu124
-
-pip install -r requirements.txt
+./setup.sh                 # CPU / Apple-MPS torch
+./setup.sh --cuda cu124    # Linux GPU box: CUDA 12.4 torch wheels (also cu121, cu128, …)
+./setup.sh --recreate      # wipe .venv and rebuild
+./setup.sh --no-optional   # skip gammatone + imbalanced-learn
 ```
 
-Python 3.11 is the tested interpreter (`.python-version`). `requirements.txt`
-is curated + pinned; `requirements-macos-venv.txt` is the exact dev-venv
-freeze for reference only. `gammatone` (prosody) and `imbalanced-learn`
-(`paper_repro` SMOTE) are optional — see comments in `requirements.txt`.
+Manual equivalent:
+
+```bash
+python3.11 -m venv .venv && . .venv/bin/activate && pip install -U pip
+# GPU box: CUDA torch first so pip keeps that build
+pip install torch==2.13.0 torchaudio==2.11.0 --index-url https://download.pytorch.org/cu124
+pip install -r requirements.txt          # torch lines + -r core + -r optional
+```
+
+Requirements files:
+
+| File | Contents |
+|---|---|
+| `requirements.txt` | one-shot: torch pins + `-r` the two below |
+| `requirements-core.txt` | mandatory stack (numpy, scipy, sklearn, pandas, matplotlib, librosa, soundfile, parselmouth, …), exact pins |
+| `requirements-optional.txt` | `gammatone` (prosody feats, git-only) + `imbalanced-learn` (`paper_repro` SMOTE) — **not** needed for the MFCC grid |
+| `requirements-lock.txt` | full `pip freeze` of a verified `.venv`, (re)written by `setup.sh` |
+
+Python 3.11 is the tested interpreter (`.python-version`). Verified clean
+install on macOS/arm64: `numpy 2.4.6`, `librosa 0.11.0` (`numba 0.67`,
+`llvmlite 0.49`), `scikit-learn 1.9.0`, `torch 2.13.0` — no resolver
+conflicts.
 
 Device is auto-selected (`cuda → mps → cpu`) in
 [`classifier/models/dnn.py`](classifier/models/dnn.py) and
 [`classifier/models/bilstm.py`](classifier/models/bilstm.py). RF is
 scikit-learn (CPU, RAM-heavy — see note in `classifier/imbalance.py`).
+
+> **BiLSTM on Apple MPS is effectively unusable** — the packed-sequence
+> LSTM path stalls (an MPS/PyTorch limitation, not a bug here). Run the
+> BiLSTM combos on the CUDA box; RF and DNN are fine on MPS/CPU.
 
 ## Running
 

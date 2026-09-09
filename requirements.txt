@@ -1,54 +1,31 @@
 # ---------------------------------------------------------------------
-# Disfluency Classifier v2 — dependencies
+# Disfluency Classifier v2 — dependencies (one-shot install)
 # ---------------------------------------------------------------------
-# Target: Python 3.11 (3.11.15 is the reference; see .python-version)
+# Preferred path is ./setup.sh (creates .venv, picks the right torch
+# build, verifies imports, writes requirements-lock.txt). This file is
+# for a manual  `pip install -r requirements.txt`  into an existing
+# Python 3.11 environment.
 #
-#   python3.11 -m venv .venv
-#   . .venv/bin/activate
+#   python3.11 -m venv .venv && . .venv/bin/activate
 #   pip install -U pip
 #   pip install -r requirements.txt
 #
-# On the GPU box, install the CUDA build of torch/torchaudio FIRST from
-# the official index, then run the line above (pip will keep the CUDA
-# build). Example for CUDA 12.4:
-#
+# GPU box: install the CUDA torch build FIRST so pip keeps it, e.g.
 #   pip install torch==2.13.0 torchaudio==2.11.0 \
 #       --index-url https://download.pytorch.org/cu124
+#   pip install -r requirements.txt
 #
-# Device is auto-selected in classifier/models/{dnn,bilstm}.py:
-#   cuda -> mps -> cpu.  RF (scikit-learn) is CPU-only and RAM-heavy.
+# Device auto-selects cuda -> mps -> cpu in classifier/models/{dnn,bilstm}.py.
+# RF (scikit-learn) is CPU-only and RAM-heavy.
 # ---------------------------------------------------------------------
 
-# --- core numerical / ML stack (versions from the working macOS venv) ---
-numpy==2.4.6
-pandas==3.0.5
-scipy==1.17.1
-scikit-learn==1.9.0
-matplotlib==3.11.1
-joblib==1.5.3
-tqdm==4.70.0
-
-# --- deep learning ---
+# deep learning (no-op if the CUDA build is already installed)
 torch==2.13.0
 torchaudio==2.11.0
 
-# --- audio I/O + DSP ---
-soundfile==0.14.0
-librosa==0.11.0          # MFCC / MFCC+SDC / SFFCC extractors + frame timing
-praat-parselmouth==0.4.7 # pitch contour for the prosody extractor
+# core stack
+-r requirements-core.txt
 
-# ---------------------------------------------------------------------
-# Optional — only needed for specific paths. Comment out if they fight
-# the pins above on your platform; the core grid does not import them.
-# ---------------------------------------------------------------------
-
-# Prosody feature extractor (#4, APSIPA 2021). `ied_prosodic_acoustic_
-# feature_extractor.py` does `from gammatone.gtgram import gtgram` at
-# import time, so prosody32 / prosody96 runs need this. Git-only package:
-gammatone @ git+https://github.com/detly/gammatone.git
-
-# SMOTE path used by paper_repro*.py (classifier.imbalance.smote). The
-# main runner uses random-undersampling instead and does NOT need this.
-# imbalanced-learn may pin an older scikit-learn; if it downgrades
-# sklearn and breaks the grid, install it in a separate venv.
-imbalanced-learn>=0.13
+# optional paths (prosody features; paper_repro SMOTE) — remove this
+# line if they conflict on your platform; the MFCC grid does not use them
+-r requirements-optional.txt
